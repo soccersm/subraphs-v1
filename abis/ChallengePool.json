@@ -1,0 +1,1018 @@
+[
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_poolFee", "type": "uint256" },
+      { "internalType": "uint256", "name": "_joinPeriod", "type": "uint256" },
+      {
+        "internalType": "uint256",
+        "name": "_maxMaturityPeriod",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_maxPlayersPerPool",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_minStakeAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_maxEventsPerChallenge",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_minMaturityPeriod",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_maxStaleRetries",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_staleExtensionPeriod",
+        "type": "uint256"
+      },
+      { "internalType": "address", "name": "_feeAddress", "type": "address" },
+      {
+        "internalType": "address",
+        "name": "_topicRegistry",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_trophiesAddress",
+        "type": "address"
+      },
+      { "internalType": "address", "name": "_ballsAddress", "type": "address" }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum IChallengePool.PoolState",
+        "name": "_state",
+        "type": "uint8"
+      }
+    ],
+    "name": "ActionNotAllowedForState",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "target", "type": "address" }
+    ],
+    "name": "AddressEmptyCode",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "account", "type": "address" }
+    ],
+    "name": "AddressInsufficientBalance",
+    "type": "error"
+  },
+  { "inputs": [], "name": "ChallengePoolClosed", "type": "error" },
+  { "inputs": [], "name": "EmptyString", "type": "error" },
+  { "inputs": [], "name": "FailedInnerCall", "type": "error" },
+  { "inputs": [], "name": "InvalidChallenge", "type": "error" },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_timeDiff", "type": "uint256" }
+    ],
+    "name": "InvalidEventMaturity",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_eventPosition",
+        "type": "uint256"
+      },
+      { "internalType": "address", "name": "_evaluator", "type": "address" }
+    ],
+    "name": "InvalidEventParam",
+    "type": "error"
+  },
+  { "inputs": [], "name": "InvalidEventTopic", "type": "error" },
+  { "inputs": [], "name": "InvalidEventsLength", "type": "error" },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_params", "type": "uint256" },
+      { "internalType": "uint256", "name": "_maturity", "type": "uint256" },
+      { "internalType": "uint256", "name": "_topics", "type": "uint256" }
+    ],
+    "name": "InvalidLengthForEvent",
+    "type": "error"
+  },
+  { "inputs": [], "name": "InvalidMaxDeadLine", "type": "error" },
+  { "inputs": [], "name": "InvalidPrediction", "type": "error" },
+  { "inputs": [], "name": "MathOverflowedMulDiv", "type": "error" },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_curentRetry", "type": "uint256" }
+    ],
+    "name": "NextStalePoolRetryNotReached",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "owner", "type": "address" }
+    ],
+    "name": "OwnableInvalidOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "account", "type": "address" }
+    ],
+    "name": "OwnableUnauthorizedAccount",
+    "type": "error"
+  },
+  { "inputs": [], "name": "PlayerAlreadyInPool", "type": "error" },
+  { "inputs": [], "name": "PlayerDidNotWinPool", "type": "error" },
+  { "inputs": [], "name": "PlayerLimitReached", "type": "error" },
+  { "inputs": [], "name": "PlayerNotInPool", "type": "error" },
+  { "inputs": [], "name": "PlayerWinningAlreadyWithdrawn", "type": "error" },
+  { "inputs": [], "name": "ProtocolInvariantCheckFailed", "type": "error" },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "token", "type": "address" }
+    ],
+    "name": "SafeERC20FailedOperation",
+    "type": "error"
+  },
+  { "inputs": [], "name": "StakeLowerThanMinimum", "type": "error" },
+  { "inputs": [], "name": "UserLacksBalls", "type": "error" },
+  { "inputs": [], "name": "ZeroAddress", "type": "error" },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "challengeId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "canceller",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum IChallengePool.PoolState",
+        "name": "state",
+        "type": "uint8"
+      }
+    ],
+    "name": "CancelChallengePool",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "challengeId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "closer",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum IChallengePool.PoolState",
+        "name": "state",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum IChallengePool.Prediction",
+        "name": "result",
+        "type": "uint8"
+      }
+    ],
+    "name": "ClosedChallengePool",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "challengeId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "participant",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "stake",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fee",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "yesParticipants",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "noParticipants",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum IChallengePool.PoolState",
+        "name": "state",
+        "type": "uint8"
+      }
+    ],
+    "name": "JoinChallengePool",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "challengeId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "closer",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum IChallengePool.PoolState",
+        "name": "state",
+        "type": "uint8"
+      }
+    ],
+    "name": "ManualChallengePool",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "challengeId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "creator",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "createdAt",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "maturity",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum IChallengePool.Prediction",
+        "name": "result",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "stake",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fee",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "yesParticipants",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "noParticipants",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          { "internalType": "bytes", "name": "eventParam", "type": "bytes" },
+          { "internalType": "uint256", "name": "topicId", "type": "uint256" },
+          { "internalType": "uint256", "name": "maturity", "type": "uint256" },
+          {
+            "internalType": "enum IChallengePool.Prediction",
+            "name": "result",
+            "type": "uint8"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct IChallengePool.ChallengeEvent[]",
+        "name": "events",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "NewChallengePool",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "StakeTokenAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "challengeId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "closer",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "nextCloseTime",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "staleRetries",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum IChallengePool.PoolState",
+        "name": "state",
+        "type": "uint8"
+      }
+    ],
+    "name": "StaleChallengePool",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "participant",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "challengeId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amountWithdrawn",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amountWon",
+        "type": "uint256"
+      }
+    ],
+    "name": "WinningsWithdrawn",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "accumulatedFee",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "balls",
+    "outputs": [
+      { "internalType": "contract IERC20", "name": "", "type": "address" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "value", "type": "uint256" },
+      { "internalType": "uint256", "name": "bps", "type": "uint256" }
+    ],
+    "name": "basisPoint",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "_challengeIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "batchCloseChallenge",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "_challengeIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "batchWithdrawWinnings",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_challengeId", "type": "uint256" }
+    ],
+    "name": "cancelFromManual",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_challengeId", "type": "uint256" }
+    ],
+    "name": "challengeDeadline",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_challengeId", "type": "uint256" }
+    ],
+    "name": "challengeState",
+    "outputs": [
+      {
+        "internalType": "enum IChallengePool.PoolState",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_challengeId", "type": "uint256" }
+    ],
+    "name": "checkWinnings",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "totalWithdrawal",
+        "type": "uint256"
+      },
+      { "internalType": "uint256", "name": "winShare", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_challengeId", "type": "uint256" }
+    ],
+    "name": "closeChallenge",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_challengeId", "type": "uint256" },
+      {
+        "internalType": "enum IChallengePool.Prediction",
+        "name": "_manualResult",
+        "type": "uint8"
+      }
+    ],
+    "name": "closeFromManual",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "string", "name": "a", "type": "string" },
+      { "internalType": "string", "name": "b", "type": "string" }
+    ],
+    "name": "compareStrings",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes[]", "name": "_eventsParams", "type": "bytes[]" },
+      {
+        "internalType": "uint256[]",
+        "name": "_eventsMaturity",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_eventsTopics",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "enum IChallengePool.Prediction",
+        "name": "_userPrediction",
+        "type": "uint8"
+      },
+      { "internalType": "uint256", "name": "_stake", "type": "uint256" }
+    ],
+    "name": "createChallenge",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "feeAddress",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_challengeId", "type": "uint256" }
+    ],
+    "name": "getChallenge",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "uint256", "name": "stake", "type": "uint256" },
+          { "internalType": "uint256", "name": "createdAt", "type": "uint256" },
+          { "internalType": "uint256", "name": "maturity", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "maxDeadline",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "nextCloseTime",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "staleRetries",
+            "type": "uint256"
+          },
+          {
+            "internalType": "enum IChallengePool.PoolState",
+            "name": "state",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum IChallengePool.Prediction",
+            "name": "result",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalParticipants",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "yesParticipants",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "noParticipants",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "bytes",
+                "name": "eventParam",
+                "type": "bytes"
+              },
+              {
+                "internalType": "uint256",
+                "name": "topicId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "maturity",
+                "type": "uint256"
+              },
+              {
+                "internalType": "enum IChallengePool.Prediction",
+                "name": "result",
+                "type": "uint8"
+              }
+            ],
+            "internalType": "struct IChallengePool.ChallengeEvent[]",
+            "name": "events",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct IChallengePool.Challenge",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_challengeId", "type": "uint256" },
+      {
+        "internalType": "enum IChallengePool.Prediction",
+        "name": "_userPrediction",
+        "type": "uint8"
+      },
+      { "internalType": "uint256", "name": "_stake", "type": "uint256" }
+    ],
+    "name": "joinChallenge",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "joinPeriod",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "maxEventsPerChallenge",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "maxMaturityPeriod",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "maxPlayersPerPool",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "maxStaleRetries",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "minMaturityPeriod",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "minStakeAmount",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_challengeId", "type": "uint256" },
+      { "internalType": "address", "name": "_participant", "type": "address" }
+    ],
+    "name": "participantWinnings",
+    "outputs": [
+      { "internalType": "uint256", "name": "winShare", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "poolFee",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_ballsAddress", "type": "address" }
+    ],
+    "name": "setBallsAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_feeAddress", "type": "address" }
+    ],
+    "name": "setFeeAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_joinPeriod", "type": "uint256" }
+    ],
+    "name": "setJoinPeriod",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_maxEventsPerChallenge",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMaxEventsPerChallenge",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_maxMaturityPeriod",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMaxMaturityPeriod",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_maxPlayersPerPool",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMaxPlayersPerPool",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_maxStaleRetries",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMaxStaleRetries",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_minMaturityPeriod",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMinMaturityPeriod",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_minStakeAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMinStakeAmount",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_poolFee", "type": "uint256" }
+    ],
+    "name": "setPoolFee",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_staleExtensionPeriod",
+        "type": "uint256"
+      }
+    ],
+    "name": "setStaleExtensionTime",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_topicRegistry", "type": "address" }
+    ],
+    "name": "setTopicRegistry",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_trophiesAddress",
+        "type": "address"
+      }
+    ],
+    "name": "setTrophiesAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_stake", "type": "uint256" }
+    ],
+    "name": "stakeAmountAndFee",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "staleExtensionPeriod",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "topicRegistry",
+    "outputs": [
+      {
+        "internalType": "contract ITopicRegistry",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "newOwner", "type": "address" }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "trophies",
+    "outputs": [
+      { "internalType": "contract IERC20", "name": "", "type": "address" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_challengeId", "type": "uint256" }
+    ],
+    "name": "withdrawWinnings",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

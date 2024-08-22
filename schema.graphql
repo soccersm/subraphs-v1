@@ -1,0 +1,291 @@
+type CancelChallengePool @entity(immutable: true) {
+  id: Bytes!
+  challengeId: BigInt! # uint256
+  canceller: Bytes! # address
+  state: Int! # uint8
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ClosedChallengePool @entity(immutable: true) {
+  id: Bytes!
+  challengeId: BigInt! # uint256
+  closer: Bytes! # address
+  state: Int! # uint8
+  result: Int! # uint8
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type JoinChallengePool @entity(immutable: true) {
+  id: Bytes!
+  challengeId: BigInt! # uint256
+  participant: Bytes! # address
+  stake: BigInt! # uint256
+  fee: BigInt! # uint256
+  yesParticipants: BigInt! # uint256
+  noParticipants: BigInt! # uint256
+  state: Int! # uint8
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ManualChallengePool @entity(immutable: true) {
+  id: Bytes!
+  challengeId: BigInt! # uint256
+  closer: Bytes! # address
+  state: Int! # uint8
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+# type ChallengeEvent @entity(immutable: true) {
+#   id: Bytes! #challenge id event id
+#   challengeId: BigInt! # uint256
+#   eventParams: Bytes! # address
+#   topicId: BigInt! # uint256
+#   maturity: BigInt! # uint256
+#   result: Int! # uint8
+# }
+
+type NewChallengePool @entity(immutable: true) {
+  id: Bytes!
+  challengeId: BigInt! # uint256
+  creator: Bytes! # address
+  createdAt: BigInt! # uint256
+  maturity: BigInt! # uint256
+  result: Int! # uint8
+  stake: BigInt! # uint256
+  fee: BigInt! # uint256
+  yesParticipants: BigInt! # uint256
+  noParticipants: BigInt! # uint256
+  # events: [ChallengeEvent!]! # tuple[]
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type OwnershipTransferred @entity(immutable: true) {
+  id: Bytes!
+  previousOwner: Bytes! # address
+  newOwner: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type StakeTokenAdded @entity(immutable: true) {
+  id: Bytes!
+  token: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type StaleChallengePool @entity(immutable: true) {
+  id: Bytes!
+  challengeId: BigInt! # uint256
+  closer: Bytes! # address
+  nextCloseTime: BigInt! # uint256
+  staleRetries: BigInt! # uint256
+  state: Int! # uint8
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type WinningsWithdrawn @entity(immutable: true) {
+  id: Bytes!
+  participant: Bytes! # address
+  challengeId: BigInt! # uint256
+  amountWithdrawn: BigInt! # uint256
+  amountWon: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+type AssetPriceProvided @entity(immutable: true) {
+  id: Bytes!
+  _provider: Bytes! # address
+  _assetSymbol: String! # string
+  _date: BigInt! # uint256
+  _price: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type AssetPriceRequested @entity(immutable: true) {
+  id: Bytes!
+  _reader: Bytes! # address
+  _assetSymbol: String! # string
+  _date: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type AssetPriceProviderOwnershipTransferred @entity(immutable: true) {
+  id: Bytes!
+  previousOwner: Bytes! # address
+  newOwner: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ProviderAdded @entity(immutable: true) {
+  id: Bytes!
+  _provider: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ProviderRemoved @entity(immutable: true) {
+  id: Bytes!
+  _provider: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ReaderAdded @entity(immutable: true) {
+  id: Bytes!
+  _reader: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ReaderRemoved @entity(immutable: true) {
+  id: Bytes!
+  _reader: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+type FootballScoreProvided @entity(immutable: true) {
+  id: Bytes!
+  _provider: Bytes! # address
+  _matchId: BigInt! # uint256
+  _homeScore: BigInt! # uint256
+  _awayScore: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type FootballScoreRequested @entity(immutable: true) {
+  id: Bytes!
+  _reader: Bytes! # address
+  _matchId: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type FootballScoreProviderOwnershipTransferred @entity(immutable: true) {
+  id: Bytes!
+  previousOwner: Bytes! # address
+  newOwner: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type FootballScoreProviderProviderAdded @entity(immutable: true) {
+  id: Bytes!
+  _provider: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type FootballScoreProviderProviderRemoved @entity(immutable: true) {
+  id: Bytes!
+  _provider: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type FootballScoreProviderReaderAdded @entity(immutable: true) {
+  id: Bytes!
+  _reader: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type FootballScoreProviderReaderRemoved @entity(immutable: true) {
+  id: Bytes!
+  _reader: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+type GeneralStatementProvided @entity(immutable: true) {
+  id: Bytes!
+  _provider: Bytes! # address
+  _statementId: BigInt! # uint256
+  _statement: String! # string
+  _results: Int! # uint8
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type GeneralStatementRequested @entity(immutable: true) {
+  id: Bytes!
+  _reader: Bytes! # address
+  _statementId: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type GeneralStatementProviderOwnershipTransferred @entity(immutable: true) {
+  id: Bytes!
+  previousOwner: Bytes! # address
+  newOwner: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type GeneralStatementProviderProviderAdded @entity(immutable: true) {
+  id: Bytes!
+  _provider: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type GeneralStatementProviderProviderRemoved @entity(immutable: true) {
+  id: Bytes!
+  _provider: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type GeneralStatementProviderReaderAdded @entity(immutable: true) {
+  id: Bytes!
+  _reader: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type GeneralStatementProviderReaderRemoved @entity(immutable: true) {
+  id: Bytes!
+  _reader: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}

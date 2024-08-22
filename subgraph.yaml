@@ -1,0 +1,166 @@
+specVersion: 1.0.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: ChallengePool
+    network: morph-testnet
+    source:
+      address: "0xeA9316E285AdAb8d931c9031720a525E4d1a2097"
+      abi: ChallengePool
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - CancelChallengePool
+        - ClosedChallengePool
+        - JoinChallengePool
+        - ManualChallengePool
+        - NewChallengePool
+        - OwnershipTransferred
+        - StakeTokenAdded
+        - StaleChallengePool
+        - WinningsWithdrawn
+      abis:
+        - name: ChallengePool
+          file: ./abis/ChallengePool.json
+      eventHandlers:
+        - event: CancelChallengePool(indexed uint256,indexed address,uint8)
+          handler: handleCancelChallengePool
+        - event: ClosedChallengePool(indexed uint256,indexed address,uint8,uint8)
+          handler: handleClosedChallengePool
+        - event: JoinChallengePool(indexed uint256,indexed
+            address,uint256,uint256,uint256,uint256,uint8)
+          handler: handleJoinChallengePool
+        - event: ManualChallengePool(indexed uint256,indexed address,uint8)
+          handler: handleManualChallengePool
+        - event: NewChallengePool(indexed uint256,indexed
+            address,uint256,uint256,uint8,uint256,uint256,uint256,uint256,(bytes,uint256,uint256,uint8)[])
+          handler: handleNewChallengePool
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: StakeTokenAdded(indexed address)
+          handler: handleStakeTokenAdded
+        - event: StaleChallengePool(indexed uint256,indexed address,uint256,uint256,uint8)
+          handler: handleStaleChallengePool
+        - event: WinningsWithdrawn(indexed address,indexed uint256,uint256,uint256)
+          handler: handleWinningsWithdrawn
+      file: ./src/challenge-pool.ts
+  - kind: ethereum
+    name: AssetPriceProvider
+    network: morph-testnet
+    source:
+      address: "0x87a0Ab77f3F4A4E525EBA0CdFac8dA64E637d0Fe"
+      abi: AssetPriceProvider
+      startBlock: 1955411
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - AssetPriceProvided
+        - AssetPriceRequested
+        - AssetPriceProviderOwnershipTransferred
+        - ProviderAdded
+        - ProviderRemoved
+        - ReaderAdded
+        - ReaderRemoved
+      abis:
+        - name: AssetPriceProvider
+          file: ./abis/AssetPriceProvider.json
+      eventHandlers:
+        - event: AssetPriceProvided(indexed address,string,uint256,uint256)
+          handler: handleAssetPriceProvided
+        - event: AssetPriceRequested(indexed address,string,uint256)
+          handler: handleAssetPriceRequested
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: ProviderAdded(indexed address)
+          handler: handleProviderAdded
+        - event: ProviderRemoved(indexed address)
+          handler: handleProviderRemoved
+        - event: ReaderAdded(indexed address)
+          handler: handleReaderAdded
+        - event: ReaderRemoved(indexed address)
+          handler: handleReaderRemoved
+      file: ./src/asset-price-provider.ts
+  - kind: ethereum
+    name: FootballScoreProvider
+    network: morph-testnet
+    source:
+      address: "0x165a2B4F2e9C6c85D545c34aE3f00D1A2A5877eA"
+      abi: FootballScoreProvider
+      startBlock: 1956611
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - FootballScoreProvided
+        - FootballScoreRequested
+        - FootballScoreProviderOwnershipTransferred
+        - FootballScoreProviderProviderAdded
+        - FootballScoreProviderProviderRemoved
+        - FootballScoreProviderReaderAdded
+        - FootballScoreProviderReaderRemoved
+      abis:
+        - name: FootballScoreProvider
+          file: ./abis/FootballScoreProvider.json
+      eventHandlers:
+        - event: FootballScoreProvided(indexed address,uint256,uint256,uint256)
+          handler: handleFootballScoreProvided
+        - event: FootballScoreRequested(indexed address,uint256)
+          handler: handleFootballScoreRequested
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: ProviderAdded(indexed address)
+          handler: handleProviderAdded
+        - event: ProviderRemoved(indexed address)
+          handler: handleProviderRemoved
+        - event: ReaderAdded(indexed address)
+          handler: handleReaderAdded
+        - event: ReaderRemoved(indexed address)
+          handler: handleReaderRemoved
+      file: ./src/football-score-provider.ts
+  - kind: ethereum
+    name: GeneralStatementProvider
+    network: morph-testnet
+    source:
+      address: "0x3462AA899f5b0ba0b908f82EEbE2D2969EC44A1c"
+      abi: GeneralStatementProvider
+      startBlock: 5345677
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - GeneralStatementProvided
+        - GeneralStatementRequested
+        - GeneralStatementProviderOwnershipTransferred
+        - GeneralStatementProviderProviderAdded
+        - GeneralStatementProviderProviderRemoved
+        - GeneralStatementProviderReaderAdded
+        - GeneralStatementProviderReaderRemoved
+      abis:
+        - name: GeneralStatementProvider
+          file: ./abis/GeneralStatementProvider.json
+      eventHandlers:
+        - event: GeneralStatementProvided(indexed address,uint256,string,uint8)
+          handler: handleGeneralStatementProvided
+        - event: GeneralStatementRequested(indexed address,uint256)
+          handler: handleGeneralStatementRequested
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: ProviderAdded(indexed address)
+          handler: handleProviderAdded
+        - event: ProviderRemoved(indexed address)
+          handler: handleProviderRemoved
+        - event: ReaderAdded(indexed address)
+          handler: handleReaderAdded
+        - event: ReaderRemoved(indexed address)
+          handler: handleReaderRemoved
+      file: ./src/general-statement-provider.ts
