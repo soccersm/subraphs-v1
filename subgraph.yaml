@@ -3,6 +3,8 @@ indexerHints:
   prune: auto
 schema:
   file: ./schema.graphql
+features:
+  - fullTextSearch
 dataSources:
   - kind: ethereum
     name: ChallengePool
@@ -10,20 +12,20 @@ dataSources:
     source:
       address: "0xeA9316E285AdAb8d931c9031720a525E4d1a2097"
       abi: ChallengePool
-      startBlock: 0
+      startBlock: 1952753
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
-        - CancelChallengePool
-        - ClosedChallengePool
-        - JoinChallengePool
-        - ManualChallengePool
-        - NewChallengePool
-        - OwnershipTransferred
-        - StakeTokenAdded
-        - StaleChallengePool
+        - ChallengePool
+        - ChallengeParticipant
+        - ChallengeStateUpdate
+        - AssetPriceTargetEvent
+        - AssetPriceBoundedEvent
+        - FootballOutcomeEvent
+        - FootballCorrectScoreEvent
+        - FootballOverUnderEvent
         - WinningsWithdrawn
       abis:
         - name: ChallengePool
@@ -41,10 +43,6 @@ dataSources:
         - event: NewChallengePool(indexed uint256,indexed
             address,uint256,uint256,uint8,uint256,uint256,uint256,uint256,(bytes,uint256,uint256,uint8)[])
           handler: handleNewChallengePool
-        - event: OwnershipTransferred(indexed address,indexed address)
-          handler: handleOwnershipTransferred
-        - event: StakeTokenAdded(indexed address)
-          handler: handleStakeTokenAdded
         - event: StaleChallengePool(indexed uint256,indexed address,uint256,uint256,uint8)
           handler: handleStaleChallengePool
         - event: WinningsWithdrawn(indexed address,indexed uint256,uint256,uint256)
@@ -64,11 +62,6 @@ dataSources:
       entities:
         - AssetPriceProvided
         - AssetPriceRequested
-        - AssetPriceProviderOwnershipTransferred
-        - ProviderAdded
-        - ProviderRemoved
-        - ReaderAdded
-        - ReaderRemoved
       abis:
         - name: AssetPriceProvider
           file: ./abis/AssetPriceProvider.json
@@ -77,16 +70,6 @@ dataSources:
           handler: handleAssetPriceProvided
         - event: AssetPriceRequested(indexed address,string,uint256)
           handler: handleAssetPriceRequested
-        - event: OwnershipTransferred(indexed address,indexed address)
-          handler: handleOwnershipTransferred
-        - event: ProviderAdded(indexed address)
-          handler: handleProviderAdded
-        - event: ProviderRemoved(indexed address)
-          handler: handleProviderRemoved
-        - event: ReaderAdded(indexed address)
-          handler: handleReaderAdded
-        - event: ReaderRemoved(indexed address)
-          handler: handleReaderRemoved
       file: ./src/asset-price-provider.ts
   - kind: ethereum
     name: FootballScoreProvider
@@ -102,11 +85,6 @@ dataSources:
       entities:
         - FootballScoreProvided
         - FootballScoreRequested
-        - FootballScoreProviderOwnershipTransferred
-        - FootballScoreProviderProviderAdded
-        - FootballScoreProviderProviderRemoved
-        - FootballScoreProviderReaderAdded
-        - FootballScoreProviderReaderRemoved
       abis:
         - name: FootballScoreProvider
           file: ./abis/FootballScoreProvider.json
@@ -115,16 +93,6 @@ dataSources:
           handler: handleFootballScoreProvided
         - event: FootballScoreRequested(indexed address,uint256)
           handler: handleFootballScoreRequested
-        - event: OwnershipTransferred(indexed address,indexed address)
-          handler: handleOwnershipTransferred
-        - event: ProviderAdded(indexed address)
-          handler: handleProviderAdded
-        - event: ProviderRemoved(indexed address)
-          handler: handleProviderRemoved
-        - event: ReaderAdded(indexed address)
-          handler: handleReaderAdded
-        - event: ReaderRemoved(indexed address)
-          handler: handleReaderRemoved
       file: ./src/football-score-provider.ts
   - kind: ethereum
     name: GeneralStatementProvider
@@ -140,11 +108,6 @@ dataSources:
       entities:
         - GeneralStatementProvided
         - GeneralStatementRequested
-        - GeneralStatementProviderOwnershipTransferred
-        - GeneralStatementProviderProviderAdded
-        - GeneralStatementProviderProviderRemoved
-        - GeneralStatementProviderReaderAdded
-        - GeneralStatementProviderReaderRemoved
       abis:
         - name: GeneralStatementProvider
           file: ./abis/GeneralStatementProvider.json
@@ -153,14 +116,4 @@ dataSources:
           handler: handleGeneralStatementProvided
         - event: GeneralStatementRequested(indexed address,uint256)
           handler: handleGeneralStatementRequested
-        - event: OwnershipTransferred(indexed address,indexed address)
-          handler: handleOwnershipTransferred
-        - event: ProviderAdded(indexed address)
-          handler: handleProviderAdded
-        - event: ProviderRemoved(indexed address)
-          handler: handleProviderRemoved
-        - event: ReaderAdded(indexed address)
-          handler: handleReaderAdded
-        - event: ReaderRemoved(indexed address)
-          handler: handleReaderRemoved
       file: ./src/general-statement-provider.ts
