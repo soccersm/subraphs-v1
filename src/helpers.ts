@@ -62,7 +62,7 @@ export function saveEvents(
           footballOutcome.result = predictionStr(e.result);
 
           const decodedParams = ethereum
-            .decode("(uint256,string)", e.eventParam)!
+            .decode('(uint256,string)', e.eventParam)!
             .toTuple();
           footballOutcome.matchId = decodedParams[0].toBigInt();
           footballOutcome.outcome = decodedParams[1].toString();
@@ -79,7 +79,7 @@ export function saveEvents(
           footballOverUnder.result = predictionStr(e.result);
 
           const decodedParams = ethereum
-            .decode("(uint256,uint256,string)", e.eventParam)!
+            .decode('(uint256,uint256,string)', e.eventParam)!
             .toTuple();
           footballOverUnder.matchId = decodedParams[0].toBigInt();
           footballOverUnder.totalGoals = decodedParams[1].toBigInt();
@@ -97,7 +97,7 @@ export function saveEvents(
           footballCorrectScore.result = predictionStr(e.result);
 
           const decodedParams = ethereum
-            .decode("(uint256,uint256,uint256)", e.eventParam)!
+            .decode('(uint256,uint256,uint256)', e.eventParam)!
             .toTuple();
           footballCorrectScore.matchId = decodedParams[0].toBigInt();
           footballCorrectScore.homeScore = decodedParams[1].toBigInt();
@@ -115,7 +115,7 @@ export function saveEvents(
           assetPriceBounded.result = predictionStr(e.result);
 
           const decodedParams = ethereum
-            .decode("(string,uint256,string)", e.eventParam)!
+            .decode('(string,uint256,uint256,string)', e.eventParam)!
             .toTuple();
           assetPriceBounded.assetSymbol = decodedParams[0].toString();
           assetPriceBounded.priceLowerBound = decodedParams[1].toBigInt();
@@ -134,7 +134,7 @@ export function saveEvents(
           assetPriceTarget.result = predictionStr(e.result);
 
           const decodedParams = ethereum
-            .decode("(string,uint256,string)", e.eventParam)!
+            .decode('(string,uint256,string)', e.eventParam)!
             .toTuple();
           assetPriceTarget.assetSymbol = decodedParams[0].toString();
           assetPriceTarget.price = decodedParams[1].toBigInt();
@@ -152,7 +152,7 @@ export function saveEvents(
           generalStatement.result = predictionStr(e.result);
 
           const decodedParams = ethereum
-            .decode("(uint256,string)", e.eventParam)!
+            .decode("(uint256)", e.eventParam)!
             .toTuple();
           generalStatement.statementId = decodedParams[0].toBigInt();
           generalStatement.save();

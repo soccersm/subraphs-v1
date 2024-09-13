@@ -4,6 +4,7 @@
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
+    "compile": "npm run codegen && npm run build",
     "graph:deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ soccersm-alpha",
     "test": "graph test",
     "goldsky:deploy": "goldsky subgraph deploy soccersm/alpha-01"
