@@ -7,11 +7,11 @@
     "compile": "npm run codegen && npm run build",
     "graph:deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ soccersm-alpha",
     "test": "graph test",
-    "goldsky:deploy": "goldsky subgraph deploy soccersm/alpha-01"
+    "goldsky:deploy": "goldsky subgraph deploy soccersm/alpha-02"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.73.0",
-    "@graphprotocol/graph-ts": "0.32.0"
+    "@graphprotocol/graph-cli": "0.82.0",
+    "@graphprotocol/graph-ts": "0.35.1"
   },
   "devDependencies": { "matchstick-as": "0.5.0" }
 }

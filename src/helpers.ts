@@ -1,4 +1,4 @@
-import { BigInt, ethereum } from "@graphprotocol/graph-ts";
+import { BigInt, ethereum, log } from "@graphprotocol/graph-ts";
 import { NewChallengePoolEventsStruct } from "../generated/ChallengePool/ChallengePool";
 import {
   AssetPriceBoundedEvent,
@@ -50,7 +50,15 @@ export function saveEvents(
   for (let i = 0; i < events.length; i++) {
     const e = events[i];
     const eventId = challengeId.toString().concat("_").concat(i.toString());
-
+    log.warning(
+      "Event Param for challenge "
+        .concat(challengeId.toString())
+        .concat("and topic ")
+        .concat(e.topicId.toString())
+        .concat(" with params ")
+        .concat(e.eventParam.toHexString()),
+      []
+    );
     switch (e.topicId.toI32()) {
       case 0: // FootBallOutcome
         let footballOutcome = FootballOutcomeEvent.load(eventId);
@@ -61,11 +69,15 @@ export function saveEvents(
           footballOutcome.challenge = challengeId.toString();
           footballOutcome.result = predictionStr(e.result);
 
-          const decodedParams = ethereum
-            .decode('(uint256,string)', e.eventParam)!
-            .toTuple();
-          footballOutcome.matchId = decodedParams[0].toBigInt();
-          footballOutcome.outcome = decodedParams[1].toString();
+          const decodedParams = ethereum.decode(
+            "(uint256,string)",
+            e.eventParam
+          );
+          if (decodedParams) {
+            const decodedTuple = decodedParams.toTuple();
+            footballOutcome.matchId = decodedTuple[0].toBigInt();
+            footballOutcome.outcome = decodedTuple[1].toString();
+          }
           footballOutcome.save();
         }
         break;
@@ -78,12 +90,16 @@ export function saveEvents(
           footballOverUnder.challenge = challengeId.toString();
           footballOverUnder.result = predictionStr(e.result);
 
-          const decodedParams = ethereum
-            .decode('(uint256,uint256,string)', e.eventParam)!
-            .toTuple();
-          footballOverUnder.matchId = decodedParams[0].toBigInt();
-          footballOverUnder.totalGoals = decodedParams[1].toBigInt();
-          footballOverUnder.outcome = decodedParams[2].toString();
+          const decodedParams = ethereum.decode(
+            "(uint256,uint256,string)",
+            e.eventParam
+          );
+          if (decodedParams) {
+            const decodedTuple = decodedParams.toTuple();
+            footballOverUnder.matchId = decodedTuple[0].toBigInt();
+            footballOverUnder.totalGoals = decodedTuple[1].toBigInt();
+            footballOverUnder.outcome = decodedTuple[2].toString();
+          }
           footballOverUnder.save();
         }
         break;
@@ -96,12 +112,16 @@ export function saveEvents(
           footballCorrectScore.challenge = challengeId.toString();
           footballCorrectScore.result = predictionStr(e.result);
 
-          const decodedParams = ethereum
-            .decode('(uint256,uint256,uint256)', e.eventParam)!
-            .toTuple();
-          footballCorrectScore.matchId = decodedParams[0].toBigInt();
-          footballCorrectScore.homeScore = decodedParams[1].toBigInt();
-          footballCorrectScore.awayScore = decodedParams[2].toBigInt();
+          const decodedParams = ethereum.decode(
+            "(uint256,uint256,uint256)",
+            e.eventParam
+          );
+          if (decodedParams) {
+            const decodedTuple = decodedParams.toTuple();
+            footballCorrectScore.matchId = decodedTuple[0].toBigInt();
+            footballCorrectScore.homeScore = decodedTuple[1].toBigInt();
+            footballCorrectScore.awayScore = decodedTuple[2].toBigInt();
+          }
           footballCorrectScore.save();
         }
         break;
@@ -114,13 +134,17 @@ export function saveEvents(
           assetPriceBounded.challenge = challengeId.toString();
           assetPriceBounded.result = predictionStr(e.result);
 
-          const decodedParams = ethereum
-            .decode('(string,uint256,uint256,string)', e.eventParam)!
-            .toTuple();
-          assetPriceBounded.assetSymbol = decodedParams[0].toString();
-          assetPriceBounded.priceLowerBound = decodedParams[1].toBigInt();
-          assetPriceBounded.priceUpperBound = decodedParams[2].toBigInt();
-          assetPriceBounded.outcome = decodedParams[3].toString();
+          const decodedParams = ethereum.decode(
+            "(string,uint256,uint256,string)",
+            e.eventParam
+          );
+          if (decodedParams) {
+            const decodedTuple = decodedParams.toTuple();
+            assetPriceBounded.assetSymbol = decodedTuple[0].toString();
+            assetPriceBounded.priceLowerBound = decodedTuple[1].toBigInt();
+            assetPriceBounded.priceUpperBound = decodedTuple[2].toBigInt();
+            assetPriceBounded.outcome = decodedTuple[3].toString();
+          }
           assetPriceBounded.save();
         }
         break;
@@ -133,12 +157,16 @@ export function saveEvents(
           assetPriceTarget.challenge = challengeId.toString();
           assetPriceTarget.result = predictionStr(e.result);
 
-          const decodedParams = ethereum
-            .decode('(string,uint256,string)', e.eventParam)!
-            .toTuple();
-          assetPriceTarget.assetSymbol = decodedParams[0].toString();
-          assetPriceTarget.price = decodedParams[1].toBigInt();
-          assetPriceTarget.outcome = decodedParams[2].toString();
+          const decodedParams = ethereum.decode(
+            "(string,uint256,string)",
+            e.eventParam
+          );
+          if (decodedParams) {
+            const decodedTuple = decodedParams.toTuple();
+            assetPriceTarget.assetSymbol = decodedTuple[0].toString();
+            assetPriceTarget.price = decodedTuple[1].toBigInt();
+            assetPriceTarget.outcome = decodedTuple[2].toString();
+          }
           assetPriceTarget.save();
         }
         break;
@@ -151,10 +179,11 @@ export function saveEvents(
           generalStatement.challenge = challengeId.toString();
           generalStatement.result = predictionStr(e.result);
 
-          const decodedParams = ethereum
-            .decode("(uint256)", e.eventParam)!
-            .toTuple();
-          generalStatement.statementId = decodedParams[0].toBigInt();
+          const decodedParams = ethereum.decode("(uint256)", e.eventParam);
+          if (decodedParams) {
+            const decodedTuple = decodedParams.toTuple();
+            generalStatement.statementId = decodedTuple[0].toBigInt();
+          }
           generalStatement.save();
         }
         break;

@@ -81,9 +81,9 @@ type AssetPriceTargetEvent implements ChallengeEvent @entity(immutable: true) {
   topicId: BigInt!
   challenge: ChallengePool!
   result: Prediction!
-  assetSymbol: String!
-  price: BigInt!
-  outcome: String!
+  assetSymbol: String
+  price: BigInt
+  outcome: String
 }
 
 type AssetPriceBoundedEvent implements ChallengeEvent @entity(immutable: true) {
@@ -92,10 +92,10 @@ type AssetPriceBoundedEvent implements ChallengeEvent @entity(immutable: true) {
   topicId: BigInt!
   challenge: ChallengePool!
   result: Prediction!
-  assetSymbol: String!
-  priceLowerBound: BigInt!
-  priceUpperBound: BigInt!
-  outcome: String!
+  assetSymbol: String
+  priceLowerBound: BigInt
+  priceUpperBound: BigInt
+  outcome: String
 }
 
 type FootballOutcomeEvent implements ChallengeEvent @entity(immutable: true) {
@@ -104,8 +104,8 @@ type FootballOutcomeEvent implements ChallengeEvent @entity(immutable: true) {
   topicId: BigInt!
   challenge: ChallengePool!
   result: Prediction!
-  matchId: BigInt!
-  outcome: String!
+  matchId: BigInt
+  outcome: String
 }
 
 type FootballCorrectScoreEvent implements ChallengeEvent @entity(immutable: true) {
@@ -114,9 +114,9 @@ type FootballCorrectScoreEvent implements ChallengeEvent @entity(immutable: true
   topicId: BigInt!
   challenge: ChallengePool!
   result: Prediction!
-  matchId: BigInt!
-  homeScore: BigInt!
-  awayScore: BigInt!
+  matchId: BigInt
+  homeScore: BigInt
+  awayScore: BigInt
 }
 
 type FootballOverUnderEvent implements ChallengeEvent @entity(immutable: true) {
@@ -125,9 +125,9 @@ type FootballOverUnderEvent implements ChallengeEvent @entity(immutable: true) {
   topicId: BigInt!
   challenge: ChallengePool!
   result: Prediction!
-  matchId: BigInt!
-  totalGoals: BigInt!
-  outcome: String!
+  matchId: BigInt
+  totalGoals: BigInt
+  outcome: String
 }
 
 type GeneralStatementEvent implements ChallengeEvent @entity(immutable: true) {
@@ -136,7 +136,7 @@ type GeneralStatementEvent implements ChallengeEvent @entity(immutable: true) {
   topicId: BigInt!
   challenge: ChallengePool!
   result: Prediction!
-  statementId: BigInt!
+  statementId: BigInt
 }
 
 type WinningsWithdrawn @entity(immutable: true) {
@@ -150,61 +150,67 @@ type WinningsWithdrawn @entity(immutable: true) {
   transactionHash: Bytes!
 }
 type AssetPriceProvided @entity(immutable: true) {
-  id: Bytes!
+  id: ID! #assetSymbol_date
   provider: Bytes! # address
   assetSymbol: String! # string
   date: BigInt! # uint256
   price: BigInt! # uint256
+  request: AssetPriceRequested!
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
 
-type AssetPriceRequested @entity(immutable: true) {
-  id: Bytes!
+type AssetPriceRequested @entity {
+  id: ID! #assetSymbol_date
   reader: Bytes! # address
   assetSymbol: String! # string
   date: BigInt! # uint256
+  provided: AssetPriceProvided
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
 
 type FootballScoreProvided @entity(immutable: true) {
-  id: Bytes!
+  id: ID! #matchId
   provider: Bytes! # address
   matchId: BigInt! # uint256
   homeScore: BigInt! # uint256
   awayScore: BigInt! # uint256
+  request: FootballScoreRequested!
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
 
-type FootballScoreRequested @entity(immutable: true) {
-  id: Bytes!
+type FootballScoreRequested @entity {
+  id: ID! # matchId
   reader: Bytes! # address
   matchId: BigInt! # uint256
+  provided: FootballScoreProvided
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
 
 type GeneralStatementProvided @entity(immutable: true) {
-  id: Bytes!
+  id: ID! #statementId
   provider: Bytes! # address
   statementId: BigInt! # uint256
   statement: String! # string
   results: Int! # uint8
+  request: GeneralStatementRequested
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
 
-type GeneralStatementRequested @entity(immutable: true) {
-  id: Bytes!
+type GeneralStatementRequested @entity {
+  id: ID!
   reader: Bytes! # address
   statementId: BigInt! # uint256
+  provided: GeneralStatementProvided
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
