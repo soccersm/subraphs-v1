@@ -50,15 +50,6 @@ export function saveEvents(
   for (let i = 0; i < events.length; i++) {
     const e = events[i];
     const eventId = challengeId.toString().concat("_").concat(i.toString());
-    log.warning(
-      "Event Param for challenge "
-        .concat(challengeId.toString())
-        .concat("and topic ")
-        .concat(e.topicId.toString())
-        .concat(" with params ")
-        .concat(e.eventParam.toHexString()),
-      []
-    );
     switch (e.topicId.toI32()) {
       case 0: // FootBallOutcome
         let footballOutcome = FootballOutcomeEvent.load(eventId);

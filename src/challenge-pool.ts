@@ -39,7 +39,7 @@ export function handleNewChallengePool(event: NewChallengePoolEvent): void {
   saveEvents(event.params.challengeId, event.params.events);
 
   const participant = new ChallengeParticipant(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+    event.transaction.hash.concatI32(event.logIndex.toI32()).toHexString()
   );
 
   participant.challenge = challenge.id;
@@ -58,7 +58,7 @@ export function handleNewChallengePool(event: NewChallengePoolEvent): void {
   participant.save();
 
   const stateUpdate = new ChallengeStateUpdate(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+    event.transaction.hash.concatI32(event.logIndex.toI32()).toHexString()
   );
 
   stateUpdate.challenge = challenge.id;
@@ -77,21 +77,24 @@ export function handleJoinChallengePool(event: JoinChallengePoolEvent): void {
     return;
   }
   let prediction = "no";
-  if (event.params.yesParticipants.gt(challenge.yesParticipants)) {
+  if (event.params.userPrediction == 1) {
     prediction = "yes";
+    challenge.yesParticipants = challenge.yesParticipants.plus(
+      BigInt.fromI32(1)
+    );
+  } else {
+    challenge.noParticipants = challenge.noParticipants.plus(BigInt.fromI32(1));
   }
-  challenge.yesParticipants = event.params.yesParticipants;
-  challenge.noParticipants = event.params.noParticipants;
   challenge.save();
 
   const participant = new ChallengeParticipant(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+    event.transaction.hash.concatI32(event.logIndex.toI32()).toHexString()
   );
 
   participant.challenge = challenge.id;
   participant.baller = event.params.participant;
   participant.stake = event.params.stake;
-  participant.prediction = prediction;
+
   participant.fee = event.params.fee;
 
   participant.blockNumber = event.block.number;
@@ -112,7 +115,7 @@ export function handleCancelChallengePool(
   challenge.save();
 
   const stateUpdate = new ChallengeStateUpdate(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+    event.transaction.hash.concatI32(event.logIndex.toI32()).toHexString()
   );
 
   stateUpdate.challenge = challenge.id;
@@ -138,7 +141,7 @@ export function handleClosedChallengePool(
   challenge.save();
 
   const stateUpdate = new ChallengeStateUpdate(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+    event.transaction.hash.concatI32(event.logIndex.toI32()).toHexString()
   );
 
   stateUpdate.challenge = challenge.id;
@@ -163,7 +166,7 @@ export function handleManualChallengePool(
   challenge.save();
 
   const stateUpdate = new ChallengeStateUpdate(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+    event.transaction.hash.concatI32(event.logIndex.toI32()).toHexString()
   );
 
   stateUpdate.challenge = challenge.id;
@@ -188,7 +191,7 @@ export function handleStaleChallengePool(event: StaleChallengePoolEvent): void {
   challenge.save();
 
   const stateUpdate = new ChallengeStateUpdate(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+    event.transaction.hash.concatI32(event.logIndex.toI32()).toHexString()
   );
 
   stateUpdate.challenge = challenge.id;
@@ -203,7 +206,7 @@ export function handleStaleChallengePool(event: StaleChallengePoolEvent): void {
 
 export function handleWinningsWithdrawn(event: WinningsWithdrawnEvent): void {
   let entity = new WinningsWithdrawn(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+    event.transaction.hash.concatI32(event.logIndex.toI32()).toHexString()
   );
   entity.baller = event.params.participant;
   entity.challenge = event.params.challengeId.toString();

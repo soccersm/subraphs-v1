@@ -22,7 +22,7 @@ type ChallengePool @entity {
 }
 
 type ChallengeParticipant @entity(immutable: true) {
-  id: Bytes!
+  id: ID! #challengeId_baller
   challenge: ChallengePool!
   baller: Bytes! # address
   stake: BigInt! # uint256
@@ -34,7 +34,7 @@ type ChallengeParticipant @entity(immutable: true) {
 }
 
 type ChallengeStateUpdate @entity(immutable: true) {
-  id: Bytes!
+  id: ID! #challengeId_baller_state
   challenge: ChallengePool!
   baller: Bytes! # address
   state: ChallengeState!
@@ -60,7 +60,7 @@ enum ChallengeState {
 }
 
 interface ChallengeEvent {
-  id: ID! # challengeIdeventPos
+  id: ID! # challengeId_eventPos
   maturity: BigInt!
   topicId: BigInt!
   challenge: ChallengePool!
@@ -76,7 +76,7 @@ union FutureEvent =
   | GeneralStatementEvent
 
 type AssetPriceTargetEvent implements ChallengeEvent @entity(immutable: true) {
-  id: ID! # challengeIdeventPos
+  id: ID! # challengeId_eventPos
   maturity: BigInt!
   topicId: BigInt!
   challenge: ChallengePool!
@@ -87,7 +87,7 @@ type AssetPriceTargetEvent implements ChallengeEvent @entity(immutable: true) {
 }
 
 type AssetPriceBoundedEvent implements ChallengeEvent @entity(immutable: true) {
-  id: ID! # challengeIdeventPos
+  id: ID! # challengeId_eventPos
   maturity: BigInt!
   topicId: BigInt!
   challenge: ChallengePool!
@@ -99,7 +99,7 @@ type AssetPriceBoundedEvent implements ChallengeEvent @entity(immutable: true) {
 }
 
 type FootballOutcomeEvent implements ChallengeEvent @entity(immutable: true) {
-  id: ID! # challengeIdeventPos
+  id: ID! # challengeId_eventPos
   maturity: BigInt!
   topicId: BigInt!
   challenge: ChallengePool!
@@ -109,7 +109,7 @@ type FootballOutcomeEvent implements ChallengeEvent @entity(immutable: true) {
 }
 
 type FootballCorrectScoreEvent implements ChallengeEvent @entity(immutable: true) {
-  id: ID! # challengeIdeventPos
+  id: ID! # challengeId_eventPos
   maturity: BigInt!
   topicId: BigInt!
   challenge: ChallengePool!
@@ -120,7 +120,7 @@ type FootballCorrectScoreEvent implements ChallengeEvent @entity(immutable: true
 }
 
 type FootballOverUnderEvent implements ChallengeEvent @entity(immutable: true) {
-  id: ID! # challengeIdeventPos
+  id: ID! # challengeId_eventPos
   maturity: BigInt!
   topicId: BigInt!
   challenge: ChallengePool!
@@ -131,7 +131,7 @@ type FootballOverUnderEvent implements ChallengeEvent @entity(immutable: true) {
 }
 
 type GeneralStatementEvent implements ChallengeEvent @entity(immutable: true) {
-  id: ID! # challengeIdeventPos
+  id: ID! # challengeId_eventPos
   maturity: BigInt!
   topicId: BigInt!
   challenge: ChallengePool!
@@ -140,7 +140,7 @@ type GeneralStatementEvent implements ChallengeEvent @entity(immutable: true) {
 }
 
 type WinningsWithdrawn @entity(immutable: true) {
-  id: Bytes!
+  id: ID! # challengeId_baller
   baller: Bytes! # address
   challenge: ChallengePool! # uint256
   amountWithdrawn: BigInt! # uint256
@@ -173,7 +173,7 @@ type AssetPriceRequested @entity {
 }
 
 type FootballScoreProvided @entity(immutable: true) {
-  id: ID! #matchId
+  id: ID! # matchId
   provider: Bytes! # address
   matchId: BigInt! # uint256
   homeScore: BigInt! # uint256
@@ -195,7 +195,7 @@ type FootballScoreRequested @entity {
 }
 
 type GeneralStatementProvided @entity(immutable: true) {
-  id: ID! #statementId
+  id: ID! # statementId
   provider: Bytes! # address
   statementId: BigInt! # uint256
   statement: String! # string
@@ -207,7 +207,7 @@ type GeneralStatementProvided @entity(immutable: true) {
 }
 
 type GeneralStatementRequested @entity {
-  id: ID!
+  id: ID! # statementId
   reader: Bytes! # address
   statementId: BigInt! # uint256
   provided: GeneralStatementProvided
