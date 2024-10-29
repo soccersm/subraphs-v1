@@ -51,7 +51,6 @@ export function handleNewChallengePool(event: NewChallengePoolEvent): void {
     participant.prediction = "no";
   }
   participant.fee = event.params.fee;
-
   participant.blockNumber = event.block.number;
   participant.blockTimestamp = event.block.timestamp;
   participant.transactionHash = event.transaction.hash;
@@ -96,6 +95,7 @@ export function handleJoinChallengePool(event: JoinChallengePoolEvent): void {
   participant.stake = event.params.stake;
 
   participant.fee = event.params.fee;
+  participant.prediction = prediction;
 
   participant.blockNumber = event.block.number;
   participant.blockTimestamp = event.block.timestamp;

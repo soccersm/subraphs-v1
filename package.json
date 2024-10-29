@@ -7,7 +7,7 @@
     "compile": "npm run codegen && npm run build",
     "graph:deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ soccersm-alpha",
     "test": "graph test",
-    "goldsky:deploy": "goldsky subgraph deploy soccersm/beta0"
+    "goldsky:deploy": "goldsky subgraph deploy soccersm/beta1"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.82.0",
