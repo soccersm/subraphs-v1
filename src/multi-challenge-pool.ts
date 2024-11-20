@@ -7,25 +7,28 @@ import {
   NewChallengePool as NewChallengePoolEvent,
   StaleChallengePool as StaleChallengePoolEvent,
   WinningsWithdrawn as WinningsWithdrawnEvent,
-} from "../generated/ChallengePool/ChallengePool";
+} from "../generated/MultiChallengePool/MultiChallengePool";
 import {
-  ChallengeParticipant,
-  ChallengePool,
-  WinningsWithdrawn,
+  MultiChallengeOption,
+  MultiChallengeParticipant,
+  MultiChallengePool,
+  MultiWinningsWithdrawn,
 } from "../generated/schema";
-import { predictionStr, saveEvents, stateStr } from "./helpers";
+import { saveOptions, stateStr } from "./helpers";
 
 export function handleNewChallengePool(event: NewChallengePoolEvent): void {
-  const challenge = new ChallengePool(event.params.challengeId.toString());
+  const challenge = new MultiChallengePool(event.params.challengeId.toString());
   challenge.challengeId = event.params.challengeId;
   challenge.baller = event.params.creator;
   challenge.createdAt = event.params.createdAt;
   challenge.maturity = event.params.maturity;
-  challenge.result = predictionStr(event.params.result);
+  challenge.result = event.params.result;
+  challenge.pollParam = event.params.poll.pollParam;
+  challenge.pollTopic = event.params.poll.topicId;
   challenge.stake = event.params.stake;
   challenge.fee = event.params.fee;
-  challenge.yesParticipants = event.params.yesParticipants;
-  challenge.noParticipants = event.params.noParticipants;
+  challenge.totalParticipants = event.params.totalParticipants;
+  challenge.totalTickets = event.params.totalTickets;
   challenge.nextCloseTime = event.params.maturity;
   challenge.staleRetries = BigInt.fromI32(0);
   challenge.state = "open";
@@ -35,9 +38,9 @@ export function handleNewChallengePool(event: NewChallengePoolEvent): void {
 
   challenge.save();
 
-  saveEvents(event.params.challengeId, event.params.events);
+  saveOptions(event.params.challengeId, event.params.poll.options);
 
-  const participant = new ChallengeParticipant(
+  const participant = new MultiChallengeParticipant(
     event.params.challengeId
       .toString()
       .concat("_")
@@ -46,13 +49,9 @@ export function handleNewChallengePool(event: NewChallengePoolEvent): void {
 
   participant.challenge = challenge.id;
   participant.baller = challenge.baller;
-  participant.stake = challenge.stake;
-  if (event.params.yesParticipants.gt(BigInt.fromI32(0))) {
-    participant.prediction = "yes";
-  } else {
-    participant.prediction = "no";
-  }
+  participant.stake = event.params.totalTickets.times(challenge.stake);
   participant.fee = event.params.fee;
+  participant.prediction = event.params.result;
   participant.blockNumber = event.block.number;
   participant.blockTimestamp = event.block.timestamp;
   participant.transactionHash = event.transaction.hash;
@@ -60,22 +59,15 @@ export function handleNewChallengePool(event: NewChallengePoolEvent): void {
 }
 
 export function handleJoinChallengePool(event: JoinChallengePoolEvent): void {
-  const challenge = ChallengePool.load(event.params.challengeId.toString());
+  const challenge = MultiChallengePool.load(
+    event.params.challengeId.toString()
+  );
   if (!challenge) {
     return;
   }
-  let prediction = "no";
-  if (event.params.userPrediction == 1) {
-    prediction = "yes";
-    challenge.yesParticipants = challenge.yesParticipants.plus(
-      BigInt.fromI32(1)
-    );
-  } else {
-    challenge.noParticipants = challenge.noParticipants.plus(BigInt.fromI32(1));
-  }
   challenge.save();
 
-  const participant = new ChallengeParticipant(
+  const participant = new MultiChallengeParticipant(
     event.params.challengeId
       .toString()
       .concat("_")
@@ -84,21 +76,34 @@ export function handleJoinChallengePool(event: JoinChallengePoolEvent): void {
 
   participant.challenge = challenge.id;
   participant.baller = event.params.participant;
-  participant.stake = event.params.stake;
+  participant.stake = event.params.ticketQuantity.times(challenge.stake);
 
   participant.fee = event.params.fee;
-  participant.prediction = prediction;
+  participant.prediction = event.params.choice;
 
   participant.blockNumber = event.block.number;
   participant.blockTimestamp = event.block.timestamp;
   participant.transactionHash = event.transaction.hash;
   participant.save();
+
+  const optionId = challenge.id
+    .toString()
+    .concat("_")
+    .concat(event.params.choice.toString());
+
+  const option = MultiChallengeOption.load(optionId);
+  if (option) {
+    option.total = option.total.plus(event.params.ticketQuantity);
+    option.save();
+  }
 }
 
 export function handleCancelChallengePool(
   event: CancelChallengePoolEvent
 ): void {
-  const challenge = ChallengePool.load(event.params.challengeId.toString());
+  const challenge = MultiChallengePool.load(
+    event.params.challengeId.toString()
+  );
   if (!challenge) {
     return;
   }
@@ -110,12 +115,14 @@ export function handleCancelChallengePool(
 export function handleClosedChallengePool(
   event: ClosedChallengePoolEvent
 ): void {
-  const challenge = ChallengePool.load(event.params.challengeId.toString());
+  const challenge = MultiChallengePool.load(
+    event.params.challengeId.toString()
+  );
   if (!challenge) {
     return;
   }
   challenge.state = stateStr(event.params.state);
-  challenge.result = predictionStr(event.params.result);
+  challenge.result = event.params.result;
 
   challenge.save();
 }
@@ -123,7 +130,9 @@ export function handleClosedChallengePool(
 export function handleManualChallengePool(
   event: ManualChallengePoolEvent
 ): void {
-  const challenge = ChallengePool.load(event.params.challengeId.toString());
+  const challenge = MultiChallengePool.load(
+    event.params.challengeId.toString()
+  );
   if (!challenge) {
     return;
   }
@@ -133,7 +142,9 @@ export function handleManualChallengePool(
 }
 
 export function handleStaleChallengePool(event: StaleChallengePoolEvent): void {
-  const challenge = ChallengePool.load(event.params.challengeId.toString());
+  const challenge = MultiChallengePool.load(
+    event.params.challengeId.toString()
+  );
   if (!challenge) {
     return;
   }
@@ -145,7 +156,7 @@ export function handleStaleChallengePool(event: StaleChallengePoolEvent): void {
 }
 
 export function handleWinningsWithdrawn(event: WinningsWithdrawnEvent): void {
-  let entity = new WinningsWithdrawn(
+  let entity = new MultiWinningsWithdrawn(
     event.transaction.hash.concatI32(event.logIndex.toI32()).toHexString()
   );
   entity.baller = event.params.participant;

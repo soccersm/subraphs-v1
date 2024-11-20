@@ -20,12 +20,7 @@ dataSources:
       entities:
         - ChallengePool
         - ChallengeParticipant
-        - ChallengeStateUpdate
-        - AssetPriceTargetEvent
-        - AssetPriceBoundedEvent
-        - FootballOutcomeEvent
-        - FootballCorrectScoreEvent
-        - FootballOverUnderEvent
+        - ChallengeEvent
         - WinningsWithdrawn
       abis:
         - name: ChallengePool
@@ -35,8 +30,7 @@ dataSources:
           handler: handleCancelChallengePool
         - event: ClosedChallengePool(indexed uint256,indexed address,uint8,uint8)
           handler: handleClosedChallengePool
-        - event: JoinChallengePool(indexed uint256,indexed
-            address,uint256,uint256,uint8,uint8)
+        - event: JoinChallengePool(indexed uint256,indexed address,uint256,uint256,uint8,uint8)
           handler: handleJoinChallengePool
         - event: ManualChallengePool(indexed uint256,indexed address,uint8)
           handler: handleManualChallengePool
@@ -117,3 +111,108 @@ dataSources:
         - event: GeneralStatementRequested(indexed address,uint256)
           handler: handleGeneralStatementRequested
       file: ./src/general-statement-provider.ts
+  - kind: ethereum
+    name: MultiChallengePool
+    network: lisk-sepolia-testnet
+    source:
+      address: "0xF9Ae3039535F030c9e8118C71FC68DE1089f5a0a"
+      abi: MultiChallengePool
+      startBlock: 12434235
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - MultiChallengePool
+        - MultiChallengeOption
+        - MultiChallengeParticipant
+        - MultiWinningsWithdrawn
+      abis:
+        - name: MultiChallengePool
+          file: ./abis/MultiChallengePool.json
+      eventHandlers:
+        - event: CancelChallengePool(indexed uint256,indexed address,uint8)
+          handler: handleCancelChallengePool
+        - event: ClosedChallengePool(indexed uint256,indexed address,uint8,bytes)
+          handler: handleClosedChallengePool
+        - event: JoinChallengePool(indexed uint256,indexed address,uint256,uint256,bytes,uint8)
+          handler: handleJoinChallengePool
+        - event: ManualChallengePool(indexed uint256,indexed address,uint8)
+          handler: handleManualChallengePool
+        - event: NewChallengePool(indexed uint256,indexed
+            address,uint256,uint256,uint256,uint256,uint8,bytes,uint256,uint256,uint256,uint256,(bytes,uint256,uint256,bytes[]))
+          handler: handleNewChallengePool
+        - event: StaleChallengePool(indexed uint256,indexed address,uint256,uint256,uint8)
+          handler: handleStaleChallengePool
+        - event: WinningsWithdrawn(indexed address,indexed uint256,uint256,uint256)
+          handler: handleWinningsWithdrawn
+      file: ./src/multi-challenge-pool.ts
+  - kind: ethereum
+    name: MultiAssetPriceProvider
+    network: lisk-sepolia-testnet
+    source:
+      address: "0xC080c3Bad87f90F00ce49C5953dFDd1189918adA"
+      abi: MultiAssetPriceProvider
+      startBlock: 12434636
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - MultiAssetPriceProvided
+        - MultiAssetPriceRequested
+      abis:
+        - name: MultiAssetPriceProvider
+          file: ./abis/MultiAssetPriceProvider.json
+      eventHandlers:
+        - event: MultiAssetPriceProvided(indexed address,string,uint256,uint256)
+          handler: handleMultiAssetPriceProvided
+        - event: MultiAssetPriceRequested(indexed address,string,uint256)
+          handler: handleMultiAssetPriceRequested
+      file: ./src/multi-asset-price-provider.ts
+  - kind: ethereum
+    name: MultiFootballScoreProvider
+    network: lisk-sepolia-testnet
+    source:
+      address: "0x466182Fb77589D613BcbF2302833Ac8A17f37818"
+      abi: MultiFootballScoreProvider
+      startBlock: 12434696
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - MultiFootballScoreProvided
+        - MultiFootballScoreRequested
+      abis:
+        - name: MultiFootballScoreProvider
+          file: ./abis/MultiFootballScoreProvider.json
+      eventHandlers:
+        - event: MultiFootballScoreProvided(indexed address,uint256,uint256,uint256)
+          handler: handleMultiFootballScoreProvided
+        - event: MultiFootballScoreRequested(indexed address,uint256)
+          handler: handleMultiFootballScoreRequested
+      file: ./src/multi-football-score-provider.ts
+  - kind: ethereum
+    name: MultiGeneralStatementProvider
+    network: lisk-sepolia-testnet
+    source:
+      address: "0x85a14478ACB2D22C740CB69e15C744b8173C5Ae8"
+      abi: MultiGeneralStatementProvider
+      startBlock: 12434301
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - MultiGeneralStatementProvided
+        - MultiGeneralStatementRequested
+      abis:
+        - name: MultiGeneralStatementProvider
+          file: ./abis/MultiGeneralStatementProvider.json
+      eventHandlers:
+        - event: MultiGeneralStatementProvided(indexed address,uint256,string,bytes)
+          handler: handleMultiGeneralStatementProvided
+        - event: MultiGeneralStatementRequested(indexed address,uint256)
+          handler: handleMultiGeneralStatementRequested
+      file: ./src/multi-general-statement-provider.ts

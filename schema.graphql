@@ -12,13 +12,20 @@ type ChallengePool @entity {
   state: ChallengeState!
   events: [ChallengeEvent!]! @derivedFrom(field: "challenge")
   participants: [ChallengeParticipant!]! @derivedFrom(field: "challenge")
-  stateUpdates: [ChallengeStateUpdate!]! @derivedFrom(field: "challenge")
-  withdrawals: [ChallengeStateUpdate!]! @derivedFrom(field: "challenge")
+  withdrawals: [WinningsWithdrawn!]! @derivedFrom(field: "challenge")
   nextCloseTime: BigInt! # uint256
   staleRetries: BigInt! # uint256
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
+}
+
+type ChallengeEvent @entity(immutable: true) {
+  id: ID! # challengeId_eventPos
+  maturity: BigInt!
+  topicId: BigInt!
+  challenge: ChallengePool!
+  param: Bytes!
 }
 
 type ChallengeParticipant @entity(immutable: true) {
@@ -28,16 +35,6 @@ type ChallengeParticipant @entity(immutable: true) {
   stake: BigInt! # uint256
   prediction: Prediction! # uint8
   fee: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type ChallengeStateUpdate @entity(immutable: true) {
-  id: ID! #challengeId_baller_state
-  challenge: ChallengePool!
-  baller: Bytes! # address
-  state: ChallengeState!
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
@@ -59,86 +56,6 @@ enum ChallengeState {
   mature
 }
 
-interface ChallengeEvent {
-  id: ID! # challengeId_eventPos
-  maturity: BigInt!
-  topicId: BigInt!
-  challenge: ChallengePool!
-  result: Prediction!
-}
-
-union FutureEvent =
-    AssetPriceTargetEvent
-  | AssetPriceBoundedEvent
-  | FootballOutcomeEvent
-  | FootballCorrectScoreEvent
-  | FootballOverUnderEvent
-  | GeneralStatementEvent
-
-type AssetPriceTargetEvent implements ChallengeEvent @entity(immutable: true) {
-  id: ID! # challengeId_eventPos
-  maturity: BigInt!
-  topicId: BigInt!
-  challenge: ChallengePool!
-  result: Prediction!
-  assetSymbol: String
-  price: BigInt
-  outcome: String
-}
-
-type AssetPriceBoundedEvent implements ChallengeEvent @entity(immutable: true) {
-  id: ID! # challengeId_eventPos
-  maturity: BigInt!
-  topicId: BigInt!
-  challenge: ChallengePool!
-  result: Prediction!
-  assetSymbol: String
-  priceLowerBound: BigInt
-  priceUpperBound: BigInt
-  outcome: String
-}
-
-type FootballOutcomeEvent implements ChallengeEvent @entity(immutable: true) {
-  id: ID! # challengeId_eventPos
-  maturity: BigInt!
-  topicId: BigInt!
-  challenge: ChallengePool!
-  result: Prediction!
-  matchId: BigInt
-  outcome: String
-}
-
-type FootballCorrectScoreEvent implements ChallengeEvent @entity(immutable: true) {
-  id: ID! # challengeId_eventPos
-  maturity: BigInt!
-  topicId: BigInt!
-  challenge: ChallengePool!
-  result: Prediction!
-  matchId: BigInt
-  homeScore: BigInt
-  awayScore: BigInt
-}
-
-type FootballOverUnderEvent implements ChallengeEvent @entity(immutable: true) {
-  id: ID! # challengeId_eventPos
-  maturity: BigInt!
-  topicId: BigInt!
-  challenge: ChallengePool!
-  result: Prediction!
-  matchId: BigInt
-  totalGoals: BigInt
-  outcome: String
-}
-
-type GeneralStatementEvent implements ChallengeEvent @entity(immutable: true) {
-  id: ID! # challengeId_eventPos
-  maturity: BigInt!
-  topicId: BigInt!
-  challenge: ChallengePool!
-  result: Prediction!
-  statementId: BigInt
-}
-
 type WinningsWithdrawn @entity(immutable: true) {
   id: ID! # challengeId_baller
   baller: Bytes! # address
@@ -149,6 +66,7 @@ type WinningsWithdrawn @entity(immutable: true) {
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
+
 type AssetPriceProvided @entity(immutable: true) {
   id: ID! #assetSymbol_date
   provider: Bytes! # address
@@ -211,6 +129,127 @@ type GeneralStatementRequested @entity {
   reader: Bytes! # address
   statementId: BigInt! # uint256
   provided: GeneralStatementProvided
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type MultiAssetPriceProvided @entity(immutable: true) {
+  id: ID! #assetSymbol_date
+  provider: Bytes! # address
+  assetSymbol: String! # string
+  date: BigInt! # uint256
+  price: BigInt! # uint256
+  request: MultiAssetPriceRequested!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type MultiAssetPriceRequested @entity {
+  id: ID! #assetSymbol_date
+  reader: Bytes! # address
+  assetSymbol: String! # string
+  date: BigInt! # uint256
+  provided: MultiAssetPriceProvided
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type MultiFootballScoreProvided @entity(immutable: true) {
+  id: ID! # matchId
+  provider: Bytes! # address
+  matchId: BigInt! # uint256
+  homeScore: BigInt! # uint256
+  awayScore: BigInt! # uint256
+  request: MultiFootballScoreRequested!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type MultiFootballScoreRequested @entity {
+  id: ID! # matchId
+  reader: Bytes! # address
+  matchId: BigInt! # uint256
+  provided: MultiFootballScoreProvided
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type MultiGeneralStatementProvided @entity(immutable: true) {
+  id: ID! # statementId
+  provider: Bytes! # address
+  statementId: BigInt! # uint256
+  statement: String! # string
+  result: Bytes! # uint8
+  request: MultiGeneralStatementRequested
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type MultiGeneralStatementRequested @entity {
+  id: ID! # statementId
+  reader: Bytes! # address
+  statementId: BigInt! # uint256
+  provided: MultiGeneralStatementProvided
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type MultiChallengePool @entity {
+  id: ID! # challengeId
+  challengeId: BigInt! # uint256
+  baller: Bytes! # address
+  createdAt: BigInt! # uint256
+  maturity: BigInt! # uint256
+  result: Bytes! # uint8
+  stake: BigInt! # uint256
+  fee: BigInt! # uint256
+  pollParam: Bytes!
+  pollTopic: BigInt!
+  totalParticipants: BigInt!
+  totalTickets: BigInt!
+  state: ChallengeState!
+  events: [MultiChallengeOption!]! @derivedFrom(field: "challenge")
+  participants: [MultiChallengeParticipant!]! @derivedFrom(field: "challenge")
+  withdrawals: [MultiChallengeParticipant!]! @derivedFrom(field: "challenge")
+  nextCloseTime: BigInt! # uint256
+  staleRetries: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type MultiChallengeOption @entity(immutable: true) {
+  id: ID! # challengeId_option
+  option: Bytes!
+  total: BigInt!
+  challenge: MultiChallengePool!
+}
+
+type MultiChallengeParticipant @entity(immutable: true) {
+  id: ID! #challengeId_baller
+  challenge: MultiChallengePool!
+  baller: Bytes! # address
+  stake: BigInt! # uint256
+  prediction: Bytes! # uint8
+  fee: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type MultiWinningsWithdrawn @entity(immutable: true) {
+  id: ID! # challengeId_baller
+  baller: Bytes! # address
+  challenge: MultiChallengePool! # uint256
+  amountWithdrawn: BigInt! # uint256
+  amountWon: BigInt! # uint256
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
